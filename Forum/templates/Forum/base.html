@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Форум{% endblock %}</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000 !important;
+            color: #FFFFFF !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Обертка для центрирования окон логина/регистрации */
+        .auth-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            background-color: #000000;
+            padding: 20px;
+        }
+
+        /* Контейнер формы с четкой контрастной AMOLED-рамкой */
+        .auth-container {
+            background-color: #000000;
+            border: 1px solid #222222;
+            border-radius: 6px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        /* Шапка блока авторизации */
+        .auth-header {
+            border: 1px solid #222222;
+            background-color: #000000;
+            color: #FFFFFF;
+            text-align: center;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        /* Сетка полей для регистрации (2 колонки) */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Стек полей для логина (1 колонка) */
+        .form-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* AMOLED-поля ввода */
+        .input-group input {
+            background-color: #1a1a1a !important;
+            border: 1px solid #2d2d2d;
+            color: #FFFFFF !important;
+            padding: 12px 16px;
+            font-size: 15px;
+            border-radius: 4px;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: #555555;
+            background-color: #222222 !important;
+        }
+
+        .input-group input::placeholder {
+            color: #aaaaaa;
+            opacity: 1;
+        }
+
+        /* Контрастная белая кнопка отправки формы */
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background-color: #FFFFFF;
+            color: #000000;
+            border: none;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+
+        /* Стильная AMOLED-кнопка для входа гостем */
+        .btn-guest {
+            display: block;
+            width: 100%;
+            background-color: #1a1a1a;
+            color: #FFFFFF;
+            border: 1px solid #2d2d2d;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            text-align: center;
+            text-decoration: none;
+            margin-bottom: 24px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .btn-guest:hover {
+            background-color: #252525;
+            border-color: #444444;
+        }
+
+        /* Нижние навигационные кнопки переключения */
+        .footer-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            border-top: 1px solid #222222;
+            padding-top: 20px;
+        }
+
+        .btn-nav {
+            background-color: #000000;
+            border: 1px solid #222222;
+            color: #888888;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 13px;
+            border-radius: 4px;
+        }
+
+        .btn-nav:hover {
+            border-color: #FFFFFF;
+            color: #FFFFFF;
+        }
+
+        /* Стили для внутренней части форума (Хедер системы) */
+        .site-header {
+            border-bottom: 1px solid #222222;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #000000;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-logo {
+            font-size: 14px;
+            color: #FFFFFF;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-link, .btn-logout {
+            color: #FFFFFF;
+            text-decoration: none;
+            border: 1px solid #222222;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            background: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .nav-link:hover, .btn-logout:hover {
+            border-color: #FFFFFF;
+        }
+
+        /* Стиль для заблокированных элементов меню (для гостей) */
+        .nav-link.disabled {
+            color: #444444 !important;
+            border-color: #111111 !important;
+            cursor: not-allowed;
+            background-color: #050505;
+        }
+
+        .nav-link.disabled:hover {
+            border-color: #111111 !important;
+            color: #444444 !important;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* Поисковая панель на главной странице */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .search-input {
+            background-color: #1a1a1a !important;
+            border: 1px solid #2d2d2d !important;
+            color: #FFFFFF !important;
+            padding: 12px 16px;
+            font-size: 15px;
+            border-radius: 4px;
+            outline: none;
+            flex: 1;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #555555 !important;
+            background-color: #222222 !important;
+        }
+
+        .btn-search {
+            background-color: #2a2a2a;
+            color: #FFFFFF;
+            border: 1px solid #3a3a3a;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .btn-search:hover {
+            background-color: #3a3a3a;
+            border-color: #555555;
+        }
+
+        /* Сетка плиток постов */
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        /* Карточка поста */
+        .post-card {
+            background-color: #000000;
+            border: 1px solid #222222;
+            border-radius: 6px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 200px;
+            transition: border-color 0.2s;
+        }
+
+        .post-card:hover {
+            border-color: #444444;
+        }
+
+        .post-title {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFFFFF;
+        }
+
+        .post-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #888888;
+            margin-bottom: 16px;
+        }
+
+        .post-snippet {
+            font-size: 14px;
+            color: #cccccc;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .btn-read {
+            align-self: flex-end;
+            background-color: #000000;
+            color: #FFFFFF;
+            border: 1px solid #222222;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn-read:hover {
+            border-color: #FFFFFF;
+        }
+
+        /* Нижний сквозной футер по макету */
+        .site-footer {
+            border-top: 1px solid #222222;
+            padding: 20px 30px;
+            display: flex;
+            gap: 30px;
+            background-color: #000000;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .footer-info {
+            border: 1px solid #222222;
+            padding: 12px;
+            border-radius: 4px;
+            max-width: 280px;
+            font-size: 12px;
+            color: #666666;
+        }
+
+        .footer-text {
+            color: #444444;
+            font-size: 14px;
+        }
+
+        .error-block {
+            background-color: #110000;
+            border: 1px solid #550000;
+            color: #FF5555;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+{% if request.user.is_authenticated %}
+    <header class="site-header">
+        <div class="header-logo">Лейбл Название "Форум"</div>
+
+        <div class="header-nav">
+            <a href="{% url 'forum_home' %}" class="nav-link">Форумы</a>
+
+            {% if request.user.email == 'guest@forum.local' or request.user.role.role_name == 'Guest' %}
+                <span class="nav-link disabled" title="Гости не могут создавать посты">Создать post</span>
+            {% else %}
+                <a href="{% url 'create_post' %}" class="nav-link">Создать post</a>
+            {% endif %}
+
+            <a href="{% url 'profile' %}" class="nav-link">Профиль</a>
+
+            <a href="{% url 'logout' %}" class="btn-logout">Выход</a>
+        </div>
+    </header>
+    {% endif %}
+
+    {% if not request.user.is_authenticated %}
+        <div class="auth-wrapper">
+            {% block auth_content %}{% endblock %}
+        </div>
+    {% else %}
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    {% endif %}
+
+    <footer class="site-footer">
+        <div class="footer-info">
+            <strong>Справочная информация</strong><br>
+            Чаво, правила сообщества и техническая поддержка проекта.
+        </div>
+        <div class="footer-text">Футер</div>
+    </footer>
+
+</body>
+</html>

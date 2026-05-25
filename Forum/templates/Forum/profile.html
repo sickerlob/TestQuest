@@ -1,0 +1,71 @@
+{% extends 'forum/base.html' %}
+{% block title %}Мой профиль — Форум{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px;">
+
+    <div class="auth-container" style="width: 100%; padding: 30px;">
+        <div class="auth-header" style="text-align: left; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 15px;">
+            Личный кабинет пользователя
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+            <div class="input-group">
+                <label style="color: #888888; font-size: 13px;">ФИО</label>
+                <div style="color: #FFFFFF; font-size: 16px; margin-top: 5px; font-weight: bold;">
+                    {{ request.user.lastname }} {{ request.user.name }} {{ request.user.fathername|default:'' }}
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label style="color: #888888; font-size: 13px;">Электронная почта (Логин)</label>
+                <div style="color: #FFFFFF; font-size: 16px; margin-top: 5px;">
+                    {{ request.user.email }}
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label style="color: #888888; font-size: 13px;">Роль в системе</label>
+                <div style="color: #FF5555; font-size: 14px; margin-top: 5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">
+                    {{ request.user.role.role_name|default:"Пользователь" }}
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label style="color: #888888; font-size: 13px;">Активность на форуме</label>
+                <div style="color: #FFFFFF; font-size: 16px; margin-top: 5px;">
+                    Создано постов: <span style="color: #00FF66; font-weight: bold;">{{ posts_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 style="font-size: 20px; color: #FFFFFF; margin-bottom: 20px; font-weight: bold;">Мои публикации</h2>
+
+        <div class="posts-grid">
+            {% for post in user_posts %}
+                <div class="post-card">
+                    <div>
+                        <h3 class="post-title">{{ post.title }}</h3>
+                        <div class="post-meta">
+                            <span>Вы автор</span>
+                            <span>{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <div class="post-snippet">
+                            {{ post.content|truncatewords:20 }}
+                        </div>
+                    </div>
+                    <a href="{% url 'post_detail' post.id %}" class="btn-read">Читать</a>
+                </div>
+            {% empty %}
+                <div class="post-card" style="grid-column: 1 / -1; text-align: center; padding: 40px; border-style: dashed;">
+                    <p style="color: #888888; margin: 0 0 15px 0;">Вы еще не создали ни одной темы на форуме.</p>
+                    <a href="{% url 'create_post' %}" class="btn-search" style="text-decoration: none; display: inline-block;">Создать первый post</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

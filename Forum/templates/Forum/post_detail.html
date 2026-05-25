@@ -1,0 +1,30 @@
+{% extends 'forum/base.html' %}
+{% block title %}{{ post.title }} — Форум{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+    
+    <div style="margin-bottom: 10px;">
+        <a href="{% url 'forum_home' %}" class="btn-nav" style="text-decoration: none; display: inline-inline-block; padding: 8px 16px;">
+            ← Назад к форумам
+        </a>
+    </div>
+
+    <div class="auth-container" style="width: 100%; padding: 40px; border-color: #222222;">
+        <h1 style="color: #FFFFFF; font-size: 26px; margin: 0 0 16px 0; font-weight: bold; line-height: 1.3;">
+            {{ post.title }}
+        </h1>
+
+        <div class="post-meta" style="border-bottom: 1px solid #222222; padding-bottom: 16px; margin-bottom: 24px;">
+            <span>Автор: <strong style="color: #FFFFFF;">{{ post.owner.lastname }} {{ post.owner.name }}</strong></span>
+            <span style="color: #444444;">|</span>
+            <span>Дата публикации: {{ post.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+
+        <div style="color: #cccccc; font-size: 16px; line-height: 1.7; white-space: pre-line;">
+            {{ post.content }}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

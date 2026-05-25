@@ -1,0 +1,54 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block auth_content %}
+<div class="auth-container" style="max-width: 650px;">
+    <div class="auth-header">Лейбл Название "Форум"</div>
+
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="error-block">
+                {% for field in form %}
+                    {% for error in field.errors %}{{ error }}<br>{% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-grid">
+            <div class="input-group">
+                <input type="text" name="lastname" placeholder="Фамилия" required value="{{ form.lastname.value|default:'' }}">
+            </div>
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Почта" required value="{{ form.email.value|default:'' }}">
+            </div>
+
+            <div class="input-group">
+                <input type="text" name="name" placeholder="Имя" required value="{{ form.name.value|default:'' }}">
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Пароль" required>
+            </div>
+
+            <div class="input-group">
+                <input type="text" name="fathername" placeholder="Отчество" value="{{ form.fathername.value|default:'' }}">
+            </div>
+            <div class="input-group">
+                <input type="password" name="password_confirm" placeholder="Повтор пароля" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Зарегистрироваться</button>
+
+        <a href="{% url 'guest_login' %}" class="btn-guest">Войти как гость</a>
+    </form>
+
+    <div class="footer-nav">
+        <a href="{% url 'login' %}" class="btn-nav">Войти по почте</a>
+        <a href="{% url 'register' %}" class="btn-nav">Зарегистрироваться</a>
+    </div>
+</div>
+{% endblock %}

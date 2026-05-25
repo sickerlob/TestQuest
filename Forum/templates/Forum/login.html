@@ -1,0 +1,35 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block auth_content %}
+<div class="auth-container">
+    <div class="auth-header">Лейбл Название "Форум"</div>
+
+    {% if error_message %}
+        <div class="error-block">{{ error_message }}</div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="form-stack">
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Почта" required value="{{ form.email.value|default:'' }}">
+            </div>
+            <div class="input-group">
+                <input type="password" name="password" placeholder="Пароль" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Войти</button>
+
+        <a href="{% url 'guest_login' %}" class="btn-guest">Войти как гость</a>
+    </form>
+
+    <div class="footer-nav">
+        <a href="{% url 'login' %}" class="btn-nav">Войти по почте</a>
+        <a href="{% url 'register' %}" class="btn-nav">Зарегистрироваться</a>
+    </div>
+</div>
+{% endblock %}

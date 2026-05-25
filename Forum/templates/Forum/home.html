@@ -1,0 +1,49 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}Главная — Форум{% endblock %}
+
+{% block content %}
+<form method="get" action="{% url 'forum_home' %}" class="search-bar">
+    <input
+        type="text"
+        name="search_topic"
+        class="search-input"
+        placeholder="Поиск по темам или тексту..."
+        value="{{ search_topic }}"
+    >
+    <input
+        type="text"
+        name="search_tag"
+        class="search-input"
+        placeholder="Поиск по хештегам (например: python)..."
+        value="{{ search_tag }}"
+    >
+    <button type="submit" class="btn-search">Найти</button>
+
+    {% if search_topic or search_tag %}
+        <a href="{% url 'forum_home' %}" class="btn-nav" style="display: flex; align-items: center; justify-content: center; text-decoration: none; padding: 12px 20px;">Сбросить</a>
+    {% endif %}
+</form>
+
+<div class="posts-grid">
+    {% for post in posts %}
+        <div class="post-card">
+            <div>
+                <h3 class="post-title">{{ post.title }}</h3>
+                <div class="post-meta">
+                    <span>Автор: {{ post.owner.lastname }} {{ post.owner.name }}</span>
+                    <span>{{ post.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+                <div class="post-snippet">
+                    {{ post.content|truncatewords:30 }}
+                </div>
+            </div>
+            <a href="{% url 'post_detail' post.id %}" class="btn-read">Читать</a>
+        </div>
+    {% empty %}
+        <div class="post-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+            <p style="color: #888888; margin: 0;">По вашему запросу ничего не найдено.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

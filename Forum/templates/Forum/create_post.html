@@ -1,0 +1,30 @@
+{% extends 'forum/base.html' %}
+
+{% block title %}Создать новый пост{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="max-width: 800px; margin: 0 auto;">
+    <div class="auth-header">Создание нового поста</div>
+
+    <form method="post" action="{% url 'create_post' %}">
+        {% csrf_token %}
+
+        <div class="form-stack">
+            <div class="input-group">
+                <label style="color: #888888; margin-bottom: 8px; font-size: 14px;">Название темы</label>
+                <input type="text" name="title" id="id_title" placeholder="Введите заголовок поста..." required class="search-input" style="background-color: #1a1a1a !important;">
+            </div>
+
+            <div class="input-group">
+                <label style="color: #888888; margin-bottom: 8px; font-size: 14px;">Текст сообщения</label>
+                <textarea name="content" id="id_content" placeholder="Что у вас нового?..." required style="background-color: #1a1a1a; border: 1px solid #2d2d2d; color: #FFFFFF; padding: 16px; font-size: 15px; border-radius: 4px; outline: none; min-height: 200px; font-family: inherit; resize: vertical;"></textarea>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-top: 24px;">
+            <button type="submit" class="btn-submit" style="margin-bottom: 0; flex: 2; cursor: pointer;">Опубликовать</button>
+            <a href="{% url 'forum_home' %}" class="btn-nav" style="display: flex; align-items: center; justify-content: center; text-decoration: none; padding: 14px;">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
